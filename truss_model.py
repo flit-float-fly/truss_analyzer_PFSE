@@ -3,7 +3,7 @@ from rich import print
 from PyNite import FEModel3D
 import numpy as np
 
-def grade_beam( mat: str,
+def truss(      mat: str,
                 L: float,
                 w: float,
                 E: float,  
