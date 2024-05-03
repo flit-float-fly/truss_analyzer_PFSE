@@ -26,7 +26,12 @@ def truss(      mat: str,
     all other inputs are in this function.
     """
     #define shear modulus
+
+    E = 200000 #MPa
+    nu = 0.28 #Steel poisson ratio
+    rho = 7850*9.81/1e9 #density in N/mm3
     G = E/(2*(1+nu))
+    J = 1 #need to determine what this actually is
 
     model = FEModel3D() # Creates an empty model
     model.add_material(mat, E, G, nu, rho)

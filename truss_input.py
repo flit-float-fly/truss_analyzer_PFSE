@@ -11,13 +11,12 @@ import planesections as ps
 import numpy as np
 
 ## TO DO:
-# - 2 Columns in expander for point loads + Locs & 
-# point moms + Locs
-# - radio button to allow for cracked section
-# - 2d plate analysis
-# 
+# run a model to stress or c/d ratio of each element
+# find dedicated database of shapes
+# determine how "J" is calculated for FE model
 
-st.header("Truss Model of Existing OWSJ")
+st.header("Truss Model of Existing Steel OWSJ")
+st.subheader("Assumed Material Properties: E = 200e3 MPa, Density = 7850 kg/m3, Poisson Ratio = 0.28")
 
 # User can input material and beam properties in the sidebar 
 input_sidebar = st.sidebar
@@ -93,9 +92,6 @@ fig.layout.xaxis.title = "Length (mm)"
 fig.layout.yaxis.title = "Depth (mm)"
 
 st.plotly_chart(fig)
-
-
-E = 200000
 
 #compile properties for truss configuration
 truss_ppts = {  "mat": "Steel",
