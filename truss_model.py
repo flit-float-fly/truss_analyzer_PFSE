@@ -3,20 +3,8 @@ from rich import print
 from PyNite import FEModel3D
 import numpy as np
 
-def truss(      mat: str,
-                L: float,
-                w: float,
-                E: float,  
-                A: float, 
-                Iz: float, 
-                Iy: float, 
-                nu: float, 
-                rho: float, 
-                J: float, 
-                subgrade_modulus: float,
-                n_springs: float,
-                UDL: list[float],
-                pt_loads: list[tuple]
+def truss(top_nodes: list,
+          bot_nodes: list, 
               ) -> FEModel3D:
     """
     Build and return an FE Model to be analyzed and post-processed that represents a beam supported by n
@@ -34,25 +22,30 @@ def truss(      mat: str,
     J = 1 #need to determine what this actually is
 
     model = FEModel3D() # Creates an empty model
-    model.add_material(mat, E, G, nu, rho)
+    model.add_material("Steel", E, G, nu, rho)
     
     # Add nodes to the model
-    dx = L / n_springs
-    spring_stiffness = subgrade_modulus * w * dx
-    print(f"{spring_stiffness = :0.2f}N/mm")
-    x_coords = list(np.linspace(0, L, n_springs))
-    nodes = []
-    node_id = 0
-    for x in x_coords:
-        node_id += 1
-        name = f"node{node_id}"
-        nodes.append(name)
-        model.add_node(name=name, X=x, Y=0.0, Z=0.0)
-        model.def_support(name, 1, 0, 1, 1, 0, 0)
-        model.def_support_spring(name, dof='DY', stiffness=spring_stiffness, direction='-') 
+    #Top nodes
+    top_node_tags = []
+    for i, node in enumerate(top_nodes):
+        name = f"T{i}"
+        top_node_tags.append(name)
+        model.add_node(name=name, X=node[0], Y=node[1] Z=0.0)
+        if i == 0 or i == len(top_nodes)-1:
+            model.def_support(name, 1, 0, 1, 1, 0, 0) 
 
-    # Add elements to the nodes
-    model.add_member(name="M1", i_node="node1", j_node=name, material=mat, Iy=Iy, Iz=Iz, J=J, A=A)
+    #Bot nodes
+    bot_node_tags = []
+    for i, node in enumerate(bot_nodes):
+        name = f"B{i}"
+        bot_node_tags.append(name)
+        model.add_node(name=name, X=node[0], Y=node[1] Z=0.0)
+
+    # Add elements to the nodes: top chord, bot chord, web
+    #Top chord
+    for i, node in enumerate(top_nodes[:-1]):
+        name = f"TC{i}"
+        model.add_member(name=name, i_node="node1", j_node=name, material=mat, Iy=Iy, Iz=Iz, J=J, A=A)
     # Add a load combo
     model.add_load_combo(name="LC", factors={"LC": 1})
     # Add Distributed and Point loads

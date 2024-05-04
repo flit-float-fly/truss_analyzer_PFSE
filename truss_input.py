@@ -3,7 +3,7 @@ from PyNite import FEModel3D
 from rich import print
 import pandas as pd
 import matplotlib.pyplot as plt
-import truss_model as truss
+import truss_model as tm
 import streamlit as st
 import plotly.graph_objects as go
 import truss_utils as tu
@@ -94,12 +94,10 @@ fig.layout.yaxis.title = "Depth (mm)"
 st.plotly_chart(fig)
 
 #compile properties for truss configuration
-truss_ppts = {  "mat": "Steel",
-                "L": L,
-                "E": E,
-                "nu": nu, 
-                "rho": rho,
-                "J": J}
+truss_model = tm.truss(top_nodes=top_nodes,
+                       bot_nodes=bot_nodes
+                       )
+truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
 
 # #loop through different subgrade moduli; save to dict
 # Fy_rxns_dict = {}
