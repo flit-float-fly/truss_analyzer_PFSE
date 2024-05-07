@@ -7,6 +7,9 @@ import truss_model as tm
 import streamlit as st
 import plotly.graph_objects as go
 import truss_utils as tu
+import truss_visulization as tv
+import truss_tables as tb
+import truss_sws as ts
 import planesections as ps
 import numpy as np
 
@@ -16,15 +19,20 @@ import numpy as np
 # determine how "J" is calculated for FE model
 
 st.header("Truss Model of Existing Steel OWSJ")
-st.subheader("Assumed Material Properties: E = 200e3 MPa, Density = 7850 kg/m3, Poisson Ratio = 0.28")
+st.write("Assumed Material Properties: E = 200e3 MPa, Density = 7850 kg/m3, Poisson Ratio = 0.28")
 
 # User can input material and beam properties in the sidebar 
 input_sidebar = st.sidebar
 with input_sidebar:
     st.subheader("Existing Member Parameters; Units = N, mm")
-    L = st.number_input("Truss Clear Span (mm)", value=6000)
-    d = st.number_input("Truss Depth (mm)", value=1000)
-    n = st.number_input("Number of Web Members", value=12)
+    L = st.number_input("Truss Clear Span (mm)", value=15000)
+    d = st.number_input("Truss Depth (mm)", value=800)
+    n = st.number_input("Number of Web Members", value=8)
+    s = st.number_input("Spacing of Joists (mm)", value=1960)
+    DL = st.number_input("Specified Total Roof Dead Load (kPa) ", value=1.0)
+    SL = st.number_input("Specified Roof Snow Load (kPa) ", value=1.2)
+
+f_load = (1.25*DL + 1.5*SL)*(s/1000) #Expected factored design load for predicting self-weight
 
 # Determine truss coordinates from inputs
 #nodes
@@ -40,64 +48,30 @@ for i, loc in enumerate(list(np.linspace(0, L, int(n/2+1)))):
         b_node = [loc-d_w/2, 0] 
         bot_nodes.append(b_node)
 
-# Setup and plot truss visualization
-fig = go.Figure()
-#top chord
-for i in range(len(top_nodes)-1):
-    x_coord_i, y_coord_i = top_nodes[i]
-    x_coord_j, y_coord_j = top_nodes[i+1]
-    trace = go.Scatter(
-        x=[x_coord_i, x_coord_j],
-        y=[y_coord_i, y_coord_j],
-        line={'color': 'green', 'width': 5},
-        showlegend=False  
-    )
-    fig.add_trace(trace)
-#bottom chord
-for i in range(len(bot_nodes)-1):
-    x_coord_i, y_coord_i = bot_nodes[i]
-    x_coord_j, y_coord_j = bot_nodes[i+1]
-    trace = go.Scatter(
-        x=[x_coord_i, x_coord_j],
-        y=[y_coord_i, y_coord_j],
-        line={'color': 'red', 'width': 5},
-        showlegend=False
-    )
-    fig.add_trace(trace)
-#down webs
-for i in range(len(bot_nodes)):
-    x_coord_i, y_coord_i = top_nodes[i]
-    x_coord_j, y_coord_j = bot_nodes[i]
-    trace = go.Scatter(
-        x=[x_coord_i, x_coord_j],
-        y=[y_coord_i, y_coord_j],
-        line={'color': 'blue', 'width': 5},
-        showlegend=False
-    )
-    fig.add_trace(trace)
-#up webs
-for i in range(len(bot_nodes)):
-    x_coord_i, y_coord_i = bot_nodes[i]
-    x_coord_j, y_coord_j = top_nodes[i+1]
-    trace = go.Scatter(
-        x=[x_coord_i, x_coord_j],
-        y=[y_coord_i, y_coord_j],
-        line={'color': 'orange', 'width': 5},
-        showlegend=False
-    )
-    fig.add_trace(trace)
-
-fig.layout.title.text = "Shape of Existing OWSJ"
-fig.layout.xaxis.title = "Length (mm)"
-fig.layout.yaxis.title = "Depth (mm)"
-
+# Create visualization from nodes
+fig = tv.truss_visualization(top_nodes, bot_nodes)
 st.plotly_chart(fig)
 
+# Import data from Canam, Vulcraft & Omega, and find expected self-weights of trusses
+canam_df = tb.canam()
+omega_df = tb.omega()
+vulcraft_df = tb.vulcraft()
+OWSJ_dfs = [canam_df, omega_df, vulcraft_df]
+sws = ts.truss_self_weight(OWSJ_dfs, L, d, f_load)
+# st.write(sws)
+sws_data = [
+    ['Canam', 'Vulcraft', 'Omega'],
+    [sws[0], sws[1], sws[2]]
+    ]
+
+# Display the table
+st.table(sws_data)
+
 #compile properties for truss configuration
-truss_model = tm.truss(top_nodes=top_nodes,
-                       bot_nodes=bot_nodes
-                       )
-truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
+# truss_model = tm.truss(top_nodes=top_nodes,
+#                        bot_nodes=bot_nodes
+#                        )
+# truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
 
 # #loop through different subgrade moduli; save to dict
 # Fy_rxns_dict = {}
