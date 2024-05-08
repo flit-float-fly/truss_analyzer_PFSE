@@ -32,10 +32,9 @@ with input_sidebar:
     DL = st.number_input("Specified Total Roof Dead Load (kPa) ", value=1.0)
     SL = st.number_input("Specified Roof Snow Load (kPa) ", value=1.2)
 
-f_load = (1.25*DL + 1.5*SL)*(s/1000) #Expected factored design load for predicting self-weight
+f_load = (1.25*DL + 1.5*SL)*(s/1000) #Expected factored design load for predicting self-weight, kN/m
 
-# Determine truss coordinates from inputs
-#nodes
+# Determine truss coordinates from inputs, and create the Figure to display
 top_nodes = []
 bot_nodes = []
 
@@ -94,11 +93,11 @@ sws_data = [
 # Display the table
 st.table(sws_data)
 
-#compile properties for truss configuration
-# truss_model = tm.truss(top_nodes=top_nodes,
-#                        bot_nodes=bot_nodes
-#                        )
-# truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
+#compile properties for model configuration and analyze
+truss_model = tm.truss(top_nodes=top_nodes,
+                       bot_nodes=bot_nodes
+                       )
+truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
 
 # #loop through different subgrade moduli; save to dict
 # Fy_rxns_dict = {}
