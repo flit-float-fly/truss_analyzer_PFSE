@@ -20,7 +20,7 @@ import numpy as np
 
 st.header("Truss Model of Existing Steel OWSJ")
 st.write("Assumed Material Properties: E = 200e3 MPa, Density = 7850 kg/m3, Poisson Ratio = 0.28")
-
+truss_type = st.selectbox('Select Truss type', ["Warren", "Modified Warren", "Pratt"])
 # User can input material and beam properties in the sidebar 
 input_sidebar = st.sidebar
 with input_sidebar:
@@ -38,18 +38,45 @@ f_load = (1.25*DL + 1.5*SL)*(s/1000) #Expected factored design load for predicti
 #nodes
 top_nodes = []
 bot_nodes = []
-d_w = L/(n/2)
-for i, loc in enumerate(list(np.linspace(0, L, int(n/2+1)))):
-    t_node = [loc, d]
-    top_nodes.append(t_node)
-    if i == 0:
-        continue
-    else: 
-        b_node = [loc-d_w/2, 0] 
-        bot_nodes.append(b_node)
 
-# Create visualization from nodes
-fig = tv.truss_visualization(top_nodes, bot_nodes)
+if truss_type == "Warren":
+    n_nodes_b = n/2
+    n_nodes_t = n_nodes_b + 1
+    dist_w_b = L/(n/2) #distance between bottom nodes
+    for i, loc in enumerate(list(np.linspace(0, L, int(n_nodes_t)))):
+        t_node = [loc, d]
+        top_nodes.append(t_node)
+        if i == 0:
+            continue
+        else: 
+            b_node = [loc-dist_w_b/2, 0] 
+            bot_nodes.append(b_node)
+    fig = tv.truss_warren(top_nodes, bot_nodes)
+
+elif truss_type == "Modified Warren":
+    n_nodes_b = n/3
+    n_nodes_t = 2*n_nodes_b + 1
+    for i, loc in enumerate(list(np.linspace(0, L, int(n_nodes_t)))):
+        t_node = [loc, d]
+        top_nodes.append(t_node)
+        if (i % 2 != 0): #add a bottom node for every even top node
+            b_node = [loc, 0] 
+            bot_nodes.append(b_node)
+    fig = tv.truss_mod_warren(top_nodes, bot_nodes)
+
+else:
+    n_nodes_b = (n-1)/2
+    n_nodes_t = n_nodes_b + 2
+    for i, loc in enumerate(list(np.linspace(0, L, int(n_nodes_t)))):
+        t_node = [loc, d]
+        top_nodes.append(t_node)
+        if (i == 0) or (i == n_nodes_t-1):
+            continue
+        else: 
+            b_node = [loc, 0] 
+            bot_nodes.append(b_node)
+    fig = tv.truss_pratt(top_nodes, bot_nodes)
+
 st.plotly_chart(fig)
 
 # Import data from Canam, Vulcraft & Omega, and find expected self-weights of trusses
