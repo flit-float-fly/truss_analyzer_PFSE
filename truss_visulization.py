@@ -37,8 +37,8 @@ def truss_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
     x_tag = top_nodes[len(top_nodes) // 2][0]
-    name_force = "TC  "+str(axial_dict["TC"])
-    tag = member_tag(name_force, x_tag, top_nodes[0][1]*1.5)
+    force = str(axial_dict["TC"])
+    tag = member_tag(force, x_tag, top_nodes[0][1]*1.5)
     fig.add_annotation(tag)
 
     #bottom chord
@@ -52,8 +52,8 @@ def truss_warren(   top_nodes: list[list[float]],
             showlegend=False
         )
         fig.add_trace(trace)
-    name_force = "BC  "+str(axial_dict["BC"])
-    tag = member_tag(name_force, x_tag, -500)
+    force = str(axial_dict["BC"])
+    tag = member_tag(force, x_tag, -500)
     fig.add_annotation(tag)
 
     #down webs
@@ -68,8 +68,8 @@ def truss_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WD{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
         fig.add_annotation(tag)
 
     #up webs
@@ -84,8 +84,8 @@ def truss_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WU{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
         fig.add_annotation(tag)
 
     # Set layout properties with equal scale for both axes
@@ -117,8 +117,8 @@ def truss_mod_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
     x_tag = top_nodes[len(top_nodes) // 2][0]
-    name_force = "TC  "+str(axial_dict["TC"])
-    tag = member_tag(name_force, x_tag, top_nodes[0][1]*1.5)
+    force = str(axial_dict["TC"])
+    tag = member_tag(force, x_tag, top_nodes[0][1]*1.5)
     fig.add_annotation(tag)
 
     #bottom chord
@@ -132,8 +132,8 @@ def truss_mod_warren(   top_nodes: list[list[float]],
             showlegend=False
         )
         fig.add_trace(trace)
-    name_force = "BC  "+str(axial_dict["BC"])
-    tag = member_tag(name_force, x_tag, -500)
+    force = str(axial_dict["BC"])
+    tag = member_tag(force, x_tag, -500)
     fig.add_annotation(tag)
 
     #down webs
@@ -148,8 +148,8 @@ def truss_mod_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WD{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
         fig.add_annotation(tag)
 
     #up webs
@@ -164,8 +164,8 @@ def truss_mod_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WU{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
         fig.add_annotation(tag)
 
     #verticals
@@ -180,8 +180,8 @@ def truss_mod_warren(   top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"V{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, (y_coord_i+y_coord_j)/2)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, (y_coord_i+y_coord_j)/2)
         fig.add_annotation(tag)
 
     # Set layout properties with equal scale for both axes
@@ -213,8 +213,8 @@ def truss_pratt(top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
     x_tag = top_nodes[len(top_nodes) // 2][0]
-    name_force = "TC  "+str(axial_dict["TC"])
-    tag = member_tag(name_force, x_tag, top_nodes[0][1]*1.5)
+    force = str(axial_dict["TC"])
+    tag = member_tag(force, x_tag, top_nodes[0][1]*1.5)
     fig.add_annotation(tag)
 
     #bottom chord
@@ -228,8 +228,8 @@ def truss_pratt(top_nodes: list[list[float]],
             showlegend=False
         )
         fig.add_trace(trace)
-    name_force = "BC  "+str(axial_dict["BC"])
-    tag = member_tag(name_force, x_tag, -500)
+    force = str(axial_dict["BC"])
+    tag = member_tag(force, x_tag, -500)
     fig.add_annotation(tag)
 
     #down webs
@@ -244,8 +244,8 @@ def truss_pratt(top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WD{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_i*0.75)
         fig.add_annotation(tag)
 
     #up webs
@@ -261,8 +261,8 @@ def truss_pratt(top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"WU{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_j*0.75)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_j*0.75)
         fig.add_annotation(tag)
 
     #verticals
@@ -277,8 +277,8 @@ def truss_pratt(top_nodes: list[list[float]],
         )
         fig.add_trace(trace)
         name = f"V{i}"
-        name_force = f"{name}  {axial_dict[name]}"
-        tag = member_tag(name_force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
+        force = str(axial_dict[name])
+        tag = member_tag(force, (x_coord_i+x_coord_j)/2, y_coord_j*0.25)
         fig.add_annotation(tag)
 
     # Set layout properties with equal scale for both axes

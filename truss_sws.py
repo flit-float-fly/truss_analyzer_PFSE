@@ -62,4 +62,8 @@ def truss_self_weight(OWSJ_dfs: list[pd.DataFrame], span: float, depth: float, f
                 df[str(f_load)] = (df[str(max(adjacent_f_loads))] - df[str(min(adjacent_f_loads))])*ratio + df[str(min(adjacent_f_loads))]
                 expected_sw_canam = round(df[str(f_load)].values.mean(),2)
 
-    return [expected_sw_canam, expected_sw_vulcraft, expected_sw_omega]
+    sws_dict = {"Canam": expected_sw_canam,
+                "Vulcraft": expected_sw_vulcraft,
+                "Omega": expected_sw_omega}
+    
+    return sws_dict

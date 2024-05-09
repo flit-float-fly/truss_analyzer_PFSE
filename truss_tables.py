@@ -55,3 +55,45 @@ def omega() -> pd.DataFrame:
     omega_df.name = "omega"
 
     return omega_df
+
+def mem_properties() -> pd.DataFrame:
+    """
+    Import member properties from Canam, organize based on member type
+    """
+    mem_properties_df = pd.read_csv("OWSJ_member_properties_canam.csv", header = None)
+
+    # create round bar df
+    round_bar_df = mem_properties_df.iloc[0:11]
+    round_bar_df.dropna(how='all', inplace=True, axis=1)
+    round_bar_df = round_bar_df.loc[2:]
+    round_bar_df.reset_index(inplace=True, drop=True)
+    round_bar_df.columns = ["size (in)", "Forming", "Mass (kg/m)", "Area (mm2)", "I (1e3 mm4)", "r (mm)"]
+    round_bar_df.index = round_bar_df["size (in)"]
+
+    # create U-Bar df
+    u_bar_df = mem_properties_df.iloc[12:29]
+    u_bar_df.dropna(how='all', inplace=True, axis=1)
+    u_bar_df = u_bar_df.iloc[3:]
+    u_bar_df.reset_index(inplace=True, drop=True)
+    u_bar_df["size"] = u_bar_df.loc[:,:5].apply(lambda row: ' '.join(row.astype(str)), axis=1) #combine the first 6 columns into 1
+    u_bar_df = pd.merge(u_bar_df["size"], u_bar_df.loc[:,7:])
+    u_bar_df.columns = ["size (in)", "Forming", "Mass (kg/m)", "Area (mm2)", "y (mm)", "Ixx (1e3 mm4)", "rxx (mm)", "Iyy (1e3 mm4)", "ryy (mm)"]
+    u_bar_df.index = u_bar_df["size (in)"]
+    
+
+    # create double angle df
+    dbl_angle_df = mem_properties_df.iloc[30:89]
+    dbl_angle_df.dropna(how='all', inplace=True, axis=1)
+    dbl_angle_df = dbl_angle_df.iloc[3:]
+    dbl_angle_df.reset_index(inplace=True, drop=True)
+    dbl_angle_df["size"] = dbl_angle_df.loc[:,:5].apply(lambda row: ' '.join(row.astype(str)), axis=1) #combine the first 6 columns into 1
+    dbl_angle_df = pd.merge(dbl_angle_df["size"], dbl_angle_df.loc[:,7:])
+    dbl_angle_df.columns = ["size (in)", "Forming", "Mass (kg/m)", "Area (mm2)", "y (mm)", "Ixx (1e3 mm4)", "rxx (mm)", "12.7 gap (mm)", "19 gap (mm)", "25 gap (mm)", "35 gap (mm)", "45 gap (mm)", "60 gap (mm)", "rz (mm)"]
+    dbl_angle_df.index = dbl_angle_df["size (in)"]
+    
+
+    mem_dict = {"Round Bar": round_bar_df,
+                "U-Bar": u_bar_df,
+                "Double Angle": dbl_angle_df}
+    
+    return mem_dict
