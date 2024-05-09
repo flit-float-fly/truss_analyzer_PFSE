@@ -18,9 +18,14 @@ import numpy as np
 # find dedicated database of shapes
 # determine how "J" is calculated for FE model
 
-st.header("Truss Model of Existing Steel OWSJ")
+st.header("FE Model of Existing Roof OWSJ")
 st.write("Assumed Material Properties: E = 200e3 MPa, Density = 7850 kg/m3, Poisson Ratio = 0.28")
-truss_type = st.selectbox('Select Truss type', ["Warren", "Modified Warren", "Pratt"])
+col1, col2 = st.columns([2,1])
+with col1:
+    truss_type = st.selectbox('Select Truss type', ["Warren", "Modified Warren", "Pratt"])
+with col2:
+    t_load = st.number_input("Testing load for model (kN/m)", value=5)
+
 # User can input material and beam properties in the sidebar 
 input_sidebar = st.sidebar
 with input_sidebar:
@@ -50,7 +55,6 @@ if truss_type == "Warren":
         else: 
             b_node = [loc-dist_w_b/2, 0] 
             bot_nodes.append(b_node)
-    fig = tv.truss_warren(top_nodes, bot_nodes)
 
 elif truss_type == "Modified Warren":
     n_nodes_b = n/3
@@ -61,7 +65,6 @@ elif truss_type == "Modified Warren":
         if (i % 2 != 0): #add a bottom node for every even top node
             b_node = [loc, 0] 
             bot_nodes.append(b_node)
-    fig = tv.truss_mod_warren(top_nodes, bot_nodes)
 
 else:
     n_nodes_b = (n-1)/2
@@ -74,7 +77,30 @@ else:
         else: 
             b_node = [loc, 0] 
             bot_nodes.append(b_node)
-    fig = tv.truss_pratt(top_nodes, bot_nodes)
+
+#compile properties for model configuration and analyze
+truss_model = tm.truss_model(top_nodes, bot_nodes, truss_type, f_load)
+truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
+
+#make a dict of axial response in members; map to same members shown in graphic
+axial_dict = {}
+axial_dict = {}
+for mem in truss_model.Members:
+    mem_mid = truss_model.Members[mem].L()/2
+    ax = truss_model.Members[mem].axial(mem_mid, combo_name="LC")
+    axial_dict[mem] = -int(ax/1000)
+
+#build the visualization with inputs from the FE model
+if truss_type == "Warren":
+    fig = tv.truss_warren(top_nodes, bot_nodes, axial_dict)
+elif truss_type == "Modified Warren":
+    fig = tv.truss_mod_warren(top_nodes, bot_nodes, axial_dict)
+else:
+    fig = tv.truss_pratt(top_nodes, bot_nodes, axial_dict)
+
+note = "Text in red shows member tag and axial force"
+fig.add_annotation(tv.member_tag(note, 3000, 3*d))
+
 
 st.plotly_chart(fig)
 
@@ -90,14 +116,8 @@ sws_data = [
     [sws[0], sws[1], sws[2]]
     ]
 
-# Display the table
+# Display the table showing the approx. self weight for each mfg
 st.table(sws_data)
-
-#compile properties for model configuration and analyze
-truss_model = tm.truss(top_nodes=top_nodes,
-                       bot_nodes=bot_nodes
-                       )
-truss_model.analyze() # Changes the model by performing the analysis and adding analysis results
 
 # #loop through different subgrade moduli; save to dict
 # Fy_rxns_dict = {}
